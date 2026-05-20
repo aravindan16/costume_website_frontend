@@ -1,78 +1,84 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { createRoot } from 'react-dom/client';
-import './styles.css';
+import React, { useEffect, useMemo, useState } from "react";
+import { createRoot } from "react-dom/client";
+import "./styles.css";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
-const WHATSAPP_NUMBER = '917010802868';
+const API_URL =
+  import.meta.env.VITE_API_URL ||
+  "https://costume-website-backend.onrender.com";
+const WHATSAPP_NUMBER = "917010802868";
 const emptyAdminProduct = {
-  name: '',
-  category: '',
-  price: '',
-  color: '',
-  stock: '',
-  description: '',
-  images: []
+  name: "",
+  category: "",
+  price: "",
+  color: "",
+  stock: "",
+  description: "",
+  images: [],
 };
-const emptySignup = { name: '', phone: '', email: '', password: '' };
-const emptyLogin = { email: '', password: '' };
+const emptySignup = { name: "", phone: "", email: "", password: "" };
+const emptyLogin = { email: "", password: "" };
 
 const fallbackProducts = [
   {
-    id: 'fallback-1',
-    name: 'Peacock Blue Silk Saree',
-    category: 'Silk',
+    id: "fallback-1",
+    name: "Peacock Blue Silk Saree",
+    category: "Silk",
     price: 4299,
-    color: 'Peacock Blue',
+    color: "Peacock Blue",
     stock: 8,
-    image: '/nilla-sarres-hero.png',
-    description: 'Rich silk finish with a woven border for weddings and festive evenings.'
+    image: "/nilla-sarres-hero.png",
+    description:
+      "Rich silk finish with a woven border for weddings and festive evenings.",
   },
   {
-    id: 'fallback-2',
-    name: 'Rose Gold Party Saree',
-    category: 'Party Wear',
+    id: "fallback-2",
+    name: "Rose Gold Party Saree",
+    category: "Party Wear",
     price: 2899,
-    color: 'Rose Gold',
+    color: "Rose Gold",
     stock: 12,
-    image: '/nilla-sarres-hero.png',
-    description: 'Soft drape, light shimmer, and a comfortable blouse-ready fall.'
+    image: "/nilla-sarres-hero.png",
+    description:
+      "Soft drape, light shimmer, and a comfortable blouse-ready fall.",
   },
   {
-    id: 'fallback-3',
-    name: 'Ivory Cotton Saree',
-    category: 'Cotton',
+    id: "fallback-3",
+    name: "Ivory Cotton Saree",
+    category: "Cotton",
     price: 1499,
-    color: 'Ivory',
+    color: "Ivory",
     stock: 15,
-    image: '/nilla-sarres-hero.png',
-    description: 'Everyday elegance with breathable cotton and a crisp woven texture.'
+    image: "/nilla-sarres-hero.png",
+    description:
+      "Everyday elegance with breathable cotton and a crisp woven texture.",
   },
   {
-    id: 'fallback-4',
-    name: 'Emerald Bridal Saree',
-    category: 'Bridal',
+    id: "fallback-4",
+    name: "Emerald Bridal Saree",
+    category: "Bridal",
     price: 6999,
-    color: 'Emerald',
+    color: "Emerald",
     stock: 4,
-    image: '/nilla-sarres-hero.png',
-    description: 'Statement saree with a grand border and jewel-tone festive finish.'
-  }
+    image: "/nilla-sarres-hero.png",
+    description:
+      "Statement saree with a grand border and jewel-tone festive finish.",
+  },
 ];
 
 function money(value) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0
+  return new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: "INR",
+    maximumFractionDigits: 0,
   }).format(value);
 }
 
 function productImageUrl(product) {
-  const image = product.image || '/nilla-sarres-hero.png';
-  if (image.startsWith('http://') || image.startsWith('https://')) {
+  const image = product.image || "/nilla-sarres-hero.png";
+  if (image.startsWith("http://") || image.startsWith("https://")) {
     return image;
   }
-  if (image.startsWith('/uploads/')) {
+  if (image.startsWith("/uploads/")) {
     return `${API_URL}${image}`;
   }
   return `${window.location.origin}${image}`;
@@ -86,8 +92,8 @@ function whatsappLink(product) {
   const message = [
     `Hi Nilla Sarres, I want to buy ${product.name} (${money(product.price)}).`,
     `Saree image: ${productImageUrl(product)}`,
-    'Please share more details.'
-  ].join('\n');
+    "Please share more details.",
+  ].join("\n");
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
 
@@ -97,23 +103,23 @@ function cartWhatsappLink(cart, customer, total) {
     `   Qty: ${item.quantity}`,
     `   Price: ${money(item.price)} each`,
     `   Subtotal: ${money(item.price * item.quantity)}`,
-    `   Image: ${productImageUrl(item)}`
+    `   Image: ${productImageUrl(item)}`,
   ]);
 
   const message = [
-    'Hi Nilla Sarres, I want to buy these sarees:',
-    '',
+    "Hi Nilla Sarres, I want to buy these sarees:",
+    "",
     ...itemLines,
-    '',
+    "",
     `Total: ${money(total)}`,
-    '',
-    'Customer details:',
+    "",
+    "Customer details:",
     `Name: ${customer.name}`,
     `Phone: ${customer.phone}`,
     `Address: ${customer.address}`,
-    '',
-    'Please confirm availability and payment details.'
-  ].join('\n');
+    "",
+    "Please confirm availability and payment details.",
+  ].join("\n");
 
   return `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 }
@@ -121,10 +127,14 @@ function cartWhatsappLink(cart, customer, total) {
 function App() {
   const [products, setProducts] = useState(fallbackProducts);
   const [cart, setCart] = useState([]);
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('All');
-  const [customer, setCustomer] = useState({ name: '', phone: '', address: '' });
-  const [status, setStatus] = useState('');
+  const [query, setQuery] = useState("");
+  const [category, setCategory] = useState("All");
+  const [customer, setCustomer] = useState({
+    name: "",
+    phone: "",
+    address: "",
+  });
+  const [status, setStatus] = useState("");
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
 
@@ -132,24 +142,26 @@ function App() {
     setActiveImageIndex(0);
   }, [selectedProduct]);
 
-  const [view, setView] = useState('shop');
-  const [showSignup, setShowSignup] = useState(() => !localStorage.getItem('nillaAccount'));
+  const [view, setView] = useState("shop");
+  const [showSignup, setShowSignup] = useState(
+    () => !localStorage.getItem("nillaAccount"),
+  );
   const [showAccount, setShowAccount] = useState(false);
-  const [accountMode, setAccountMode] = useState('login');
+  const [accountMode, setAccountMode] = useState("login");
   const [signup, setSignup] = useState(emptySignup);
   const [login, setLogin] = useState(emptyLogin);
   const [currentAccount, setCurrentAccount] = useState(() => {
-    const saved = localStorage.getItem('nillaAccount');
+    const saved = localStorage.getItem("nillaAccount");
     if (!saved) return null;
     const account = JSON.parse(saved);
-    return account.role === 'admin' ? null : account;
+    return account.role === "admin" ? null : account;
   });
-  const [adminPassword, setAdminPassword] = useState('');
+  const [adminPassword, setAdminPassword] = useState("");
   const [adminProduct, setAdminProduct] = useState(emptyAdminProduct);
-  const [adminTab, setAdminTab] = useState('upload');
+  const [adminTab, setAdminTab] = useState("upload");
   const [editingProduct, setEditingProduct] = useState(null);
   const [existingImages, setExistingImages] = useState([]);
-  const [adminStatus, setAdminStatus] = useState('');
+  const [adminStatus, setAdminStatus] = useState("");
   const [imagePreviews, setImagePreviews] = useState([]);
 
   useEffect(() => {
@@ -157,8 +169,14 @@ function App() {
       const urls = adminProduct.images.map((file) => URL.createObjectURL(file));
       setImagePreviews(urls);
       return () => urls.forEach((url) => URL.revokeObjectURL(url));
-    } else if (editingProduct && editingProduct.images && editingProduct.images.length > 0) {
-      setImagePreviews(editingProduct.images.map((img) => productImageUrl({ image: img })));
+    } else if (
+      editingProduct &&
+      editingProduct.images &&
+      editingProduct.images.length > 0
+    ) {
+      setImagePreviews(
+        editingProduct.images.map((img) => productImageUrl({ image: img })),
+      );
     } else if (editingProduct && editingProduct.image) {
       setImagePreviews([productImageUrl(editingProduct)]);
     } else {
@@ -166,7 +184,7 @@ function App() {
     }
   }, [adminProduct.images, editingProduct]);
 
-  const isAdmin = currentAccount?.role === 'admin';
+  const isAdmin = currentAccount?.role === "admin";
 
   function loadProducts() {
     return fetch(`${API_URL}/api/products`)
@@ -181,77 +199,93 @@ function App() {
 
   useEffect(() => {
     const selectProductFromHash = () => {
-      if (!window.location.hash.startsWith('#product=')) {
+      if (!window.location.hash.startsWith("#product=")) {
         setSelectedProduct(null);
         return;
       }
 
-      const productId = window.location.hash.replace('#product=', '');
+      const productId = window.location.hash.replace("#product=", "");
       if (!productId) {
         setSelectedProduct(null);
         return;
       }
 
-      const matchingProduct = products.find((product) => product.id === decodeURIComponent(productId));
+      const matchingProduct = products.find(
+        (product) => product.id === decodeURIComponent(productId),
+      );
       if (matchingProduct) {
         setSelectedProduct(matchingProduct);
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }
     };
 
     selectProductFromHash();
-    window.addEventListener('hashchange', selectProductFromHash);
-    return () => window.removeEventListener('hashchange', selectProductFromHash);
+    window.addEventListener("hashchange", selectProductFromHash);
+    return () =>
+      window.removeEventListener("hashchange", selectProductFromHash);
   }, [products]);
 
   const categories = useMemo(
-    () => ['All', ...Array.from(new Set(products.map((item) => item.category)))],
-    [products]
+    () => [
+      "All",
+      ...Array.from(new Set(products.map((item) => item.category))),
+    ],
+    [products],
   );
 
   const filteredProducts = useMemo(() => {
     return products.filter((item) => {
-      const matchesCategory = category === 'All' || item.category === category;
-      const searchText = `${item.name} ${item.category} ${item.color}`.toLowerCase();
+      const matchesCategory = category === "All" || item.category === category;
+      const searchText =
+        `${item.name} ${item.category} ${item.color}`.toLowerCase();
       return matchesCategory && searchText.includes(query.toLowerCase());
     });
   }, [products, category, query]);
 
-  const subtotal = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0,
+  );
 
   function openProduct(product) {
     setSelectedProduct(product);
-    setView('shop');
-    window.history.pushState(null, '', productShareUrl(product));
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setView("shop");
+    window.history.pushState(null, "", productShareUrl(product));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function closeProduct() {
     setSelectedProduct(null);
-    setView('shop');
-    window.history.pushState(null, '', `${window.location.pathname}#collection`);
+    setView("shop");
+    window.history.pushState(
+      null,
+      "",
+      `${window.location.pathname}#collection`,
+    );
     window.setTimeout(() => {
-      document.getElementById('collection')?.scrollIntoView({ behavior: 'smooth' });
+      document
+        .getElementById("collection")
+        ?.scrollIntoView({ behavior: "smooth" });
     }, 0);
   }
 
   function openShop() {
-    setView('shop');
+    setView("shop");
     setSelectedProduct(null);
   }
 
   function openAdmin() {
     if (!isAdmin) {
-      setAccountMode('login');
+      setAccountMode("login");
       setShowAccount(true);
-      setStatus('Login with the admin account to upload sarees.');
+      setStatus("Login with the admin account to upload sarees.");
       return;
     }
-    setView('admin');
+    setView("admin");
     setSelectedProduct(null);
     setShowAccount(false);
-    window.history.pushState(null, '', `${window.location.pathname}#admin`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.history.pushState(null, "", `${window.location.pathname}#admin`);
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function closeSignup() {
@@ -263,52 +297,52 @@ function App() {
       setShowAccount(true);
       return;
     }
-    setAccountMode('signup');
+    setAccountMode("signup");
     setShowSignup(true);
   }
 
   function saveAccount(account) {
     setCurrentAccount(account);
-    if (account.role === 'admin') {
-      localStorage.removeItem('nillaAccount');
+    if (account.role === "admin") {
+      localStorage.removeItem("nillaAccount");
     } else {
-      localStorage.setItem('nillaAccount', JSON.stringify(account));
+      localStorage.setItem("nillaAccount", JSON.stringify(account));
     }
   }
 
   function logout() {
     setCurrentAccount(null);
-    setAdminPassword('');
-    localStorage.removeItem('nillaAccount');
+    setAdminPassword("");
+    localStorage.removeItem("nillaAccount");
     openShop();
     setShowAccount(false);
     setShowSignup(true);
-    setStatus('Logged out.');
+    setStatus("Logged out.");
   }
 
   async function submitSignup(event) {
     event.preventDefault();
     try {
       const response = await fetch(`${API_URL}/api/auth/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(signup)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(signup),
       });
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new Error(error.detail || 'Signup failed.');
+        throw new Error(error.detail || "Signup failed.");
       }
       const account = await response.json();
       saveAccount(account);
       setCustomer((current) => ({
         ...current,
         name: account.name || current.name,
-        phone: account.phone || current.phone
+        phone: account.phone || current.phone,
       }));
       setSignup(emptySignup);
       closeSignup();
       setShowAccount(false);
-      setStatus('User account created.');
+      setStatus("User account created.");
     } catch (error) {
       setStatus(error.message);
     }
@@ -318,29 +352,31 @@ function App() {
     event.preventDefault();
     try {
       const response = await fetch(`${API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(login)
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(login),
       });
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new Error(error.detail || 'Login failed.');
+        throw new Error(error.detail || "Login failed.");
       }
       const account = await response.json();
       saveAccount(account);
-      setAdminPassword(account.role === 'admin' ? login.password : '');
+      setAdminPassword(account.role === "admin" ? login.password : "");
       setCustomer((current) => ({
         ...current,
         name: account.name || current.name,
-        phone: account.phone || current.phone
+        phone: account.phone || current.phone,
       }));
       setLogin(emptyLogin);
       setShowAccount(false);
       setShowSignup(false);
-      setStatus(`${account.role === 'admin' ? 'Admin' : 'User'} login successful.`);
-      if (account.role === 'admin') {
-        setView('admin');
-        window.history.pushState(null, '', `${window.location.pathname}#admin`);
+      setStatus(
+        `${account.role === "admin" ? "Admin" : "User"} login successful.`,
+      );
+      if (account.role === "admin") {
+        setView("admin");
+        window.history.pushState(null, "", `${window.location.pathname}#admin`);
       }
     } catch (error) {
       setStatus(error.message);
@@ -350,58 +386,64 @@ function App() {
   async function submitAdminProduct(event) {
     event.preventDefault();
     if (!isAdmin) {
-      setAdminStatus('Only the manual admin account can post sarees.');
+      setAdminStatus("Only the manual admin account can post sarees.");
       return;
     }
 
     const formData = new FormData();
     Object.entries(adminProduct).forEach(([key, value]) => {
-      if (key === 'images') {
+      if (key === "images") {
         if (Array.isArray(value)) {
           value.forEach((file) => {
-            formData.append('images', file);
+            formData.append("images", file);
           });
         }
-      } else if (value !== null && value !== '') {
+      } else if (value !== null && value !== "") {
         formData.append(key, value);
       }
     });
 
     if (editingProduct) {
       existingImages.forEach((img) => {
-        formData.append('existing_images', img);
+        formData.append("existing_images", img);
       });
     }
 
     try {
       const isEditing = Boolean(editingProduct);
       const response = await fetch(
-        `${API_URL}/api/admin/products${isEditing ? `/${editingProduct.id}` : ''}`,
+        `${API_URL}/api/admin/products${isEditing ? `/${editingProduct.id}` : ""}`,
         {
-          method: isEditing ? 'PUT' : 'POST',
+          method: isEditing ? "PUT" : "POST",
           headers: {
-            'X-Admin-Email': currentAccount.email,
-            'X-Admin-Password': adminPassword
+            "X-Admin-Email": currentAccount.email,
+            "X-Admin-Password": adminPassword,
           },
-          body: formData
-        }
+          body: formData,
+        },
       );
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new Error(error.detail || 'Could not save saree.');
+        throw new Error(error.detail || "Could not save saree.");
       }
       const savedProduct = await response.json();
       setProducts((current) => {
         if (isEditing) {
-          return current.map((product) => (product.id === savedProduct.id ? savedProduct : product));
+          return current.map((product) =>
+            product.id === savedProduct.id ? savedProduct : product,
+          );
         }
         return [savedProduct, ...current];
       });
       setAdminProduct(emptyAdminProduct);
       setEditingProduct(null);
-      setAdminTab('manage');
+      setAdminTab("manage");
       event.currentTarget.reset();
-      setAdminStatus(isEditing ? 'Saree updated successfully.' : 'Saree posted successfully.');
+      setAdminStatus(
+        isEditing
+          ? "Saree updated successfully."
+          : "Saree posted successfully.",
+      );
       await loadProducts();
     } catch (error) {
       setAdminStatus(error.message);
@@ -410,9 +452,10 @@ function App() {
 
   function startEditProduct(product) {
     setEditingProduct(product);
-    const imgs = product.images && product.images.length > 0
-      ? product.images
-      : [product.image || '/nilla-sarres-hero.png'];
+    const imgs =
+      product.images && product.images.length > 0
+        ? product.images
+        : [product.image || "/nilla-sarres-hero.png"];
     setExistingImages(imgs);
     setAdminProduct({
       name: product.name,
@@ -421,45 +464,52 @@ function App() {
       color: product.color,
       stock: String(product.stock),
       description: product.description,
-      images: []
+      images: [],
     });
-    setAdminTab('upload');
+    setAdminTab("upload");
     setAdminStatus(`Editing ${product.name}.`);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   function resetAdminForm() {
     setEditingProduct(null);
     setExistingImages([]);
     setAdminProduct(emptyAdminProduct);
-    setAdminStatus('');
+    setAdminStatus("");
   }
 
   async function deleteProduct(product) {
     if (!isAdmin) {
-      setAdminStatus('Only the admin account can delete sarees.');
+      setAdminStatus("Only the admin account can delete sarees.");
       return;
     }
-    const confirmDelete = window.confirm(`Are you sure you want to delete the saree "${product.name}"?`);
+    const confirmDelete = window.confirm(
+      `Are you sure you want to delete the saree "${product.name}"?`,
+    );
     if (!confirmDelete) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/admin/products/${product.id}`, {
-        method: 'DELETE',
-        headers: {
-          'X-Admin-Email': currentAccount.email,
-          'X-Admin-Password': adminPassword
-        }
-      });
+      const response = await fetch(
+        `${API_URL}/api/admin/products/${product.id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "X-Admin-Email": currentAccount.email,
+            "X-Admin-Password": adminPassword,
+          },
+        },
+      );
 
       if (!response.ok) {
         const error = await response.json().catch(() => ({}));
-        throw new Error(error.detail || 'Could not delete saree.');
+        throw new Error(error.detail || "Could not delete saree.");
       }
 
-      setProducts((current) => current.filter((item) => item.id !== product.id));
+      setProducts((current) =>
+        current.filter((item) => item.id !== product.id),
+      );
       setAdminStatus(`Saree "${product.name}" deleted successfully.`);
-      
+
       if (editingProduct?.id === product.id) {
         resetAdminForm();
       }
@@ -473,7 +523,7 @@ function App() {
     const shareData = {
       title: `${product.name} - Nilla Sarres`,
       text: `Check this saree from Nilla Sarres: ${product.name} (${money(product.price)})`,
-      url: productShareUrl(product)
+      url: productShareUrl(product),
     };
 
     try {
@@ -482,10 +532,12 @@ function App() {
         return;
       }
 
-      await navigator.clipboard.writeText(`${shareData.text}\n${shareData.url}`);
-      setStatus('Product link copied. You can share it now.');
+      await navigator.clipboard.writeText(
+        `${shareData.text}\n${shareData.url}`,
+      );
+      setStatus("Product link copied. You can share it now.");
     } catch {
-      setStatus('Sharing was cancelled.');
+      setStatus("Sharing was cancelled.");
     }
   }
 
@@ -494,7 +546,9 @@ function App() {
       const existing = current.find((item) => item.id === product.id);
       if (existing) {
         return current.map((item) =>
-          item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item,
         );
       }
       return [...current, { ...product, quantity: 1 }];
@@ -505,31 +559,45 @@ function App() {
   function changeQuantity(id, delta) {
     setCart((current) =>
       current
-        .map((item) => ({ ...item, quantity: item.id === id ? item.quantity + delta : item.quantity }))
-        .filter((item) => item.quantity > 0)
+        .map((item) => ({
+          ...item,
+          quantity: item.id === id ? item.quantity + delta : item.quantity,
+        }))
+        .filter((item) => item.quantity > 0),
     );
   }
 
   function placeOrder(event) {
     event.preventDefault();
     if (!cart.length) {
-      setStatus('Please add at least one saree to the cart.');
+      setStatus("Please add at least one saree to the cart.");
       return;
     }
 
-    window.open(cartWhatsappLink(cart, customer, subtotal), '_blank', 'noreferrer');
-    setStatus('WhatsApp opened with your cart details.');
+    window.open(
+      cartWhatsappLink(cart, customer, subtotal),
+      "_blank",
+      "noreferrer",
+    );
+    setStatus("WhatsApp opened with your cart details.");
   }
 
   return (
     <main>
       <header className="nav">
-        <a className="brand" href="#top" aria-label="Nilla Sarres home" onClick={openShop}>
+        <a
+          className="brand"
+          href="#top"
+          aria-label="Nilla Sarres home"
+          onClick={openShop}
+        >
           <img className="brand-logo" src="/websiteLogo.jpeg" alt="" />
           <span>Nilla Sarres</span>
         </a>
         <nav>
-          <a href="#collection" onClick={openShop}>Collection</a>
+          <a href="#collection" onClick={openShop}>
+            Collection
+          </a>
           <a href="#cart" onClick={openShop}>
             Cart ({cart.reduce((sum, item) => sum + item.quantity, 0)})
           </a>
@@ -537,8 +605,8 @@ function App() {
             type="button"
             className="avatar-button"
             onClick={openProfileOrSignup}
-            aria-label={currentAccount ? 'Open profile' : 'Open signup'}
-            title={currentAccount ? currentAccount.name : 'Create account'}
+            aria-label={currentAccount ? "Open profile" : "Open signup"}
+            title={currentAccount ? currentAccount.name : "Create account"}
           >
             {currentAccount ? (
               currentAccount.name.charAt(0).toUpperCase()
@@ -552,7 +620,7 @@ function App() {
         </nav>
       </header>
 
-      {view === 'admin' ? (
+      {view === "admin" ? (
         <section className="admin-page" id="admin">
           <div className="section-heading">
             <p>Admin role</p>
@@ -561,12 +629,14 @@ function App() {
 
           {!isAdmin ? (
             <div className="admin-login">
-              <p className="muted">Only the manual admin account can upload sarees.</p>
+              <p className="muted">
+                Only the manual admin account can upload sarees.
+              </p>
               <button
                 type="button"
                 className="checkout-button"
                 onClick={() => {
-                  setAccountMode('login');
+                  setAccountMode("login");
                   setShowAccount(true);
                 }}
               >
@@ -575,19 +645,23 @@ function App() {
             </div>
           ) : (
             <div className="admin-shell">
-              <div className="admin-tabs" role="tablist" aria-label="Saree admin tabs">
+              <div
+                className="admin-tabs"
+                role="tablist"
+                aria-label="Saree admin tabs"
+              >
                 <button
                   type="button"
-                  className={adminTab === 'upload' ? 'active' : ''}
-                  onClick={() => setAdminTab('upload')}
+                  className={adminTab === "upload" ? "active" : ""}
+                  onClick={() => setAdminTab("upload")}
                 >
-                  {editingProduct ? 'Edit Saree' : 'Upload Saree'}
+                  {editingProduct ? "Edit Saree" : "Upload Saree"}
                 </button>
                 <button
                   type="button"
-                  className={adminTab === 'manage' ? 'active' : ''}
+                  className={adminTab === "manage" ? "active" : ""}
                   onClick={() => {
-                    setAdminTab('manage');
+                    setAdminTab("manage");
                     resetAdminForm();
                   }}
                 >
@@ -595,12 +669,16 @@ function App() {
                 </button>
               </div>
 
-              {adminTab === 'upload' ? (
+              {adminTab === "upload" ? (
                 <form className="admin-form" onSubmit={submitAdminProduct}>
                   {editingProduct && (
                     <div className="edit-banner wide-field">
                       <span>Editing {editingProduct.name}</span>
-                      <button type="button" className="share-button" onClick={resetAdminForm}>
+                      <button
+                        type="button"
+                        className="share-button"
+                        onClick={resetAdminForm}
+                      >
                         Cancel Edit
                       </button>
                     </div>
@@ -610,7 +688,12 @@ function App() {
                     <input
                       required
                       value={adminProduct.name}
-                      onChange={(event) => setAdminProduct({ ...adminProduct, name: event.target.value })}
+                      onChange={(event) =>
+                        setAdminProduct({
+                          ...adminProduct,
+                          name: event.target.value,
+                        })
+                      }
                     />
                   </label>
                   <label>
@@ -618,7 +701,12 @@ function App() {
                     <input
                       required
                       value={adminProduct.category}
-                      onChange={(event) => setAdminProduct({ ...adminProduct, category: event.target.value })}
+                      onChange={(event) =>
+                        setAdminProduct({
+                          ...adminProduct,
+                          category: event.target.value,
+                        })
+                      }
                       placeholder="Silk, Cotton, Bridal..."
                     />
                   </label>
@@ -629,7 +717,12 @@ function App() {
                       min="1"
                       type="number"
                       value={adminProduct.price}
-                      onChange={(event) => setAdminProduct({ ...adminProduct, price: event.target.value })}
+                      onChange={(event) =>
+                        setAdminProduct({
+                          ...adminProduct,
+                          price: event.target.value,
+                        })
+                      }
                     />
                   </label>
                   <label>
@@ -637,7 +730,12 @@ function App() {
                     <input
                       required
                       value={adminProduct.color}
-                      onChange={(event) => setAdminProduct({ ...adminProduct, color: event.target.value })}
+                      onChange={(event) =>
+                        setAdminProduct({
+                          ...adminProduct,
+                          color: event.target.value,
+                        })
+                      }
                     />
                   </label>
                   <label>
@@ -647,7 +745,12 @@ function App() {
                       min="0"
                       type="number"
                       value={adminProduct.stock}
-                      onChange={(event) => setAdminProduct({ ...adminProduct, stock: event.target.value })}
+                      onChange={(event) =>
+                        setAdminProduct({
+                          ...adminProduct,
+                          stock: event.target.value,
+                        })
+                      }
                     />
                   </label>
                   <label className="image-upload-label">
@@ -657,22 +760,40 @@ function App() {
                       multiple
                       type="file"
                       accept="image/png,image/jpeg,image/webp"
-                      onChange={(event) => setAdminProduct({ ...adminProduct, images: Array.from(event.target.files || []) })}
+                      onChange={(event) =>
+                        setAdminProduct({
+                          ...adminProduct,
+                          images: Array.from(event.target.files || []),
+                        })
+                      }
                     />
                   </label>
                   <div className="image-preview-container">
                     {/* Saved Images (if editing) */}
                     {editingProduct && existingImages.length > 0 && (
                       <div className="preview-section">
-                        <span className="preview-title">Saved Images ({existingImages.length}) - Click &times; to remove</span>
+                        <span className="preview-title">
+                          Saved Images ({existingImages.length}) - Click &times;
+                          to remove
+                        </span>
                         <div className="image-preview-grid">
                           {existingImages.map((img, idx) => (
-                            <div className="image-preview-wrapper existing-image-wrapper" key={idx}>
-                              <img src={productImageUrl({ image: img })} alt={`Saved ${idx + 1}`} />
+                            <div
+                              className="image-preview-wrapper existing-image-wrapper"
+                              key={idx}
+                            >
+                              <img
+                                src={productImageUrl({ image: img })}
+                                alt={`Saved ${idx + 1}`}
+                              />
                               <button
                                 type="button"
                                 className="remove-preview-btn"
-                                onClick={() => setExistingImages(existingImages.filter((_, i) => i !== idx))}
+                                onClick={() =>
+                                  setExistingImages(
+                                    existingImages.filter((_, i) => i !== idx),
+                                  )
+                                }
                                 title="Remove this image"
                               >
                                 &times;
@@ -686,19 +807,31 @@ function App() {
                     {/* Newly Selected Previews */}
                     <div className="preview-section">
                       <span className="preview-title">
-                        {editingProduct ? 'Add New Images' : 'Saree Images Preview'} ({imagePreviews.length})
+                        {editingProduct
+                          ? "Add New Images"
+                          : "Saree Images Preview"}{" "}
+                        ({imagePreviews.length})
                       </span>
                       {imagePreviews.length > 0 ? (
                         <div className="image-preview-grid">
                           {imagePreviews.map((url, idx) => (
-                            <div className="image-preview-wrapper new-image-wrapper" key={idx}>
+                            <div
+                              className="image-preview-wrapper new-image-wrapper"
+                              key={idx}
+                            >
                               <img src={url} alt={`New Preview ${idx + 1}`} />
                               <button
                                 type="button"
                                 className="remove-preview-btn"
                                 onClick={() => {
-                                  const updatedFiles = adminProduct.images.filter((_, i) => i !== idx);
-                                  setAdminProduct({ ...adminProduct, images: updatedFiles });
+                                  const updatedFiles =
+                                    adminProduct.images.filter(
+                                      (_, i) => i !== idx,
+                                    );
+                                  setAdminProduct({
+                                    ...adminProduct,
+                                    images: updatedFiles,
+                                  });
                                 }}
                                 title="Remove this preview"
                               >
@@ -709,10 +842,24 @@ function App() {
                         </div>
                       ) : (
                         <div className="image-preview-placeholder">
-                          <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <polyline points="21 15 16 10 5 21"/>
+                          <svg
+                            width="24"
+                            height="24"
+                            fill="none"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            viewBox="0 0 24 24"
+                          >
+                            <rect
+                              x="3"
+                              y="3"
+                              width="18"
+                              height="18"
+                              rx="2"
+                              ry="2"
+                            />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <polyline points="21 15 16 10 5 21" />
                           </svg>
                           <span>No new images selected</span>
                         </div>
@@ -725,33 +872,58 @@ function App() {
                       required
                       rows="4"
                       value={adminProduct.description}
-                      onChange={(event) => setAdminProduct({ ...adminProduct, description: event.target.value })}
+                      onChange={(event) =>
+                        setAdminProduct({
+                          ...adminProduct,
+                          description: event.target.value,
+                        })
+                      }
                     />
                   </label>
                   <button type="submit" className="checkout-button">
-                    {editingProduct ? 'Update Saree' : 'Post Saree'}
+                    {editingProduct ? "Update Saree" : "Post Saree"}
                   </button>
-                  <button type="button" className="share-button" onClick={openShop}>View User Shop</button>
-                  {adminStatus && <p className="status wide-field">{adminStatus}</p>}
+                  <button
+                    type="button"
+                    className="share-button"
+                    onClick={openShop}
+                  >
+                    View User Shop
+                  </button>
+                  {adminStatus && (
+                    <p className="status wide-field">{adminStatus}</p>
+                  )}
                 </form>
               ) : (
                 <div className="manage-panel">
                   {products.length === 0 ? (
                     <div className="empty-manage-state">
-                      <p>No sarees found. Use the first tab to upload a new saree!</p>
+                      <p>
+                        No sarees found. Use the first tab to upload a new
+                        saree!
+                      </p>
                     </div>
                   ) : (
                     products.map((product) => (
                       <article className="manage-row" key={product.id}>
-                        <img src={productImageUrl(product)} alt={product.name} />
+                        <img
+                          src={productImageUrl(product)}
+                          alt={product.name}
+                        />
                         <div className="manage-row-details">
                           <strong>{product.name}</strong>
                           <span className="manage-row-meta">
-                            <span className="badge-cat">{product.category}</span>
+                            <span className="badge-cat">
+                              {product.category}
+                            </span>
                             <span className="divider">•</span>
-                            <span className="price-tag">{money(product.price)}</span>
+                            <span className="price-tag">
+                              {money(product.price)}
+                            </span>
                             <span className="divider">•</span>
-                            <span className={`stock-status ${product.stock === 0 ? 'out-of-stock' : ''}`}>
+                            <span
+                              className={`stock-status ${product.stock === 0 ? "out-of-stock" : ""}`}
+                            >
                               {product.stock} left
                             </span>
                           </span>
@@ -763,9 +935,16 @@ function App() {
                             onClick={() => startEditProduct(product)}
                             title="Edit Saree"
                           >
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                              <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                            <svg
+                              width="16"
+                              height="16"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                            >
+                              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                              <path d="M18.5 2.5a2.121 2.121 0 1 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
                             </svg>
                             Edit
                           </button>
@@ -775,11 +954,18 @@ function App() {
                             onClick={() => deleteProduct(product)}
                             title="Delete Saree"
                           >
-                            <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                              <polyline points="3 6 5 6 21 6"/>
-                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
-                              <line x1="10" y1="11" x2="10" y2="17"/>
-                              <line x1="14" y1="11" x2="14" y2="17"/>
+                            <svg
+                              width="16"
+                              height="16"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="2"
+                              viewBox="0 0 24 24"
+                            >
+                              <polyline points="3 6 5 6 21 6" />
+                              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                              <line x1="10" y1="11" x2="10" y2="17" />
+                              <line x1="14" y1="11" x2="14" y2="17" />
                             </svg>
                             Delete
                           </button>
@@ -794,44 +980,57 @@ function App() {
         </section>
       ) : selectedProduct ? (
         <section className="product-page" id="top">
-          <button type="button" className="back-button" onClick={closeProduct}>Back to Collection</button>
+          <button type="button" className="back-button" onClick={closeProduct}>
+            Back to Collection
+          </button>
           <div className="detail-layout">
             <div className="detail-gallery-container">
               <div className="detail-image">
                 <img
                   src={productImageUrl({
-                    image: (selectedProduct.images && selectedProduct.images.length > 0)
-                      ? selectedProduct.images[activeImageIndex]
-                      : selectedProduct.image
+                    image:
+                      selectedProduct.images &&
+                      selectedProduct.images.length > 0
+                        ? selectedProduct.images[activeImageIndex]
+                        : selectedProduct.image,
                   })}
                   alt={selectedProduct.name}
                 />
-                {selectedProduct.images && selectedProduct.images.length > 1 && (
-                  <>
-                    <button
-                      type="button"
-                      className="carousel-btn prev-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveImageIndex((prev) => (prev === 0 ? selectedProduct.images.length - 1 : prev - 1));
-                      }}
-                      aria-label="Previous image"
-                    >
-                      &#10094;
-                    </button>
-                    <button
-                      type="button"
-                      className="carousel-btn next-btn"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setActiveImageIndex((prev) => (prev === selectedProduct.images.length - 1 ? 0 : prev + 1));
-                      }}
-                      aria-label="Next image"
-                    >
-                      &#10095;
-                    </button>
-                  </>
-                )}
+                {selectedProduct.images &&
+                  selectedProduct.images.length > 1 && (
+                    <>
+                      <button
+                        type="button"
+                        className="carousel-btn prev-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveImageIndex((prev) =>
+                            prev === 0
+                              ? selectedProduct.images.length - 1
+                              : prev - 1,
+                          );
+                        }}
+                        aria-label="Previous image"
+                      >
+                        &#10094;
+                      </button>
+                      <button
+                        type="button"
+                        className="carousel-btn next-btn"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveImageIndex((prev) =>
+                            prev === selectedProduct.images.length - 1
+                              ? 0
+                              : prev + 1,
+                          );
+                        }}
+                        aria-label="Next image"
+                      >
+                        &#10095;
+                      </button>
+                    </>
+                  )}
               </div>
               {selectedProduct.images && selectedProduct.images.length > 1 && (
                 <div className="gallery-thumbnails">
@@ -839,7 +1038,7 @@ function App() {
                     <button
                       key={idx}
                       type="button"
-                      className={`gallery-thumb-btn ${idx === activeImageIndex ? 'active' : ''}`}
+                      className={`gallery-thumb-btn ${idx === activeImageIndex ? "active" : ""}`}
                       onClick={() => setActiveImageIndex(idx)}
                     >
                       <img src={productImageUrl({ image: img })} alt="" />
@@ -864,13 +1063,27 @@ function App() {
                 </div>
               </dl>
               <div className="detail-actions">
-                <a className="whatsapp-button" href={whatsappLink(selectedProduct)} target="_blank" rel="noreferrer">
+                <a
+                  className="whatsapp-button"
+                  href={whatsappLink(selectedProduct)}
+                  target="_blank"
+                  rel="noreferrer"
+                >
                   Buy on WhatsApp
                 </a>
-                <button type="button" className="share-button" onClick={() => shareProduct(selectedProduct)}>
+                <button
+                  type="button"
+                  className="share-button"
+                  onClick={() => shareProduct(selectedProduct)}
+                >
                   Share
                 </button>
-                <button type="button" onClick={() => addToCart(selectedProduct)}>Add to Cart</button>
+                <button
+                  type="button"
+                  onClick={() => addToCart(selectedProduct)}
+                >
+                  Add to Cart
+                </button>
               </div>
               {status && <p className="status">{status}</p>}
             </div>
@@ -879,12 +1092,20 @@ function App() {
       ) : (
         <>
           <section className="hero" id="top">
-            <img src="/nilla-sarres-hero.png" alt="Elegant sarees arranged inside a boutique" />
+            <img
+              src="/nilla-sarres-hero.png"
+              alt="Elegant sarees arranged inside a boutique"
+            />
             <div className="hero-copy">
               <p>Fresh festive drapes</p>
               <h1>Nilla Sarres</h1>
-              <span>Silk, cotton, bridal, and party wear sarees selected for graceful everyday shopping.</span>
-              <a href="#collection" className="primary-link">Shop Sarees</a>
+              <span>
+                Silk, cotton, bridal, and party wear sarees selected for
+                graceful everyday shopping.
+              </span>
+              <a href="#collection" className="primary-link">
+                Shop Sarees
+              </a>
             </div>
           </section>
 
@@ -905,7 +1126,10 @@ function App() {
               </label>
               <label>
                 Category
-                <select value={category} onChange={(event) => setCategory(event.target.value)}>
+                <select
+                  value={category}
+                  onChange={(event) => setCategory(event.target.value)}
+                >
                   {categories.map((item) => (
                     <option key={item}>{item}</option>
                   ))}
@@ -922,7 +1146,8 @@ function App() {
                   tabIndex="0"
                   onClick={() => openProduct(product)}
                   onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') openProduct(product);
+                    if (event.key === "Enter" || event.key === " ")
+                      openProduct(product);
                   }}
                 >
                   <img src={productImageUrl(product)} alt={product.name} />
@@ -953,7 +1178,7 @@ function App() {
         </>
       )}
 
-      {view === 'shop' && !selectedProduct && (
+      {view === "shop" && !selectedProduct && (
         <section className="cart-layout" id="cart">
           <div className="cart-panel">
             <div className="section-heading compact">
@@ -970,10 +1195,23 @@ function App() {
                       <strong>{item.name}</strong>
                       <span>{money(item.price)}</span>
                     </div>
-                    <div className="stepper" aria-label={`${item.name} quantity`}>
-                      <button type="button" onClick={() => changeQuantity(item.id, -1)}>-</button>
+                    <div
+                      className="stepper"
+                      aria-label={`${item.name} quantity`}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => changeQuantity(item.id, -1)}
+                      >
+                        -
+                      </button>
                       <span>{item.quantity}</span>
-                      <button type="button" onClick={() => changeQuantity(item.id, 1)}>+</button>
+                      <button
+                        type="button"
+                        onClick={() => changeQuantity(item.id, 1)}
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
                 ))}
@@ -995,7 +1233,9 @@ function App() {
               <input
                 required
                 value={customer.name}
-                onChange={(event) => setCustomer({ ...customer, name: event.target.value })}
+                onChange={(event) =>
+                  setCustomer({ ...customer, name: event.target.value })
+                }
               />
             </label>
             <label>
@@ -1003,7 +1243,9 @@ function App() {
               <input
                 required
                 value={customer.phone}
-                onChange={(event) => setCustomer({ ...customer, phone: event.target.value })}
+                onChange={(event) =>
+                  setCustomer({ ...customer, phone: event.target.value })
+                }
               />
             </label>
             <label>
@@ -1012,19 +1254,33 @@ function App() {
                 required
                 rows="4"
                 value={customer.address}
-                onChange={(event) => setCustomer({ ...customer, address: event.target.value })}
+                onChange={(event) =>
+                  setCustomer({ ...customer, address: event.target.value })
+                }
               />
             </label>
-            <button type="submit" className="checkout-button">Buy Cart on WhatsApp</button>
+            <button type="submit" className="checkout-button">
+              Buy Cart on WhatsApp
+            </button>
             {status && <p className="status">{status}</p>}
           </form>
         </section>
       )}
 
       {showSignup && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="signup-title">
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="signup-title"
+        >
           <form className="signup-modal" onSubmit={submitSignup}>
-            <button type="button" className="modal-close" onClick={closeSignup} aria-label="Close signup">
+            <button
+              type="button"
+              className="modal-close"
+              onClick={closeSignup}
+              aria-label="Close signup"
+            >
               x
             </button>
             <div className="section-heading compact">
@@ -1036,7 +1292,9 @@ function App() {
               <input
                 required
                 value={signup.name}
-                onChange={(event) => setSignup({ ...signup, name: event.target.value })}
+                onChange={(event) =>
+                  setSignup({ ...signup, name: event.target.value })
+                }
                 placeholder="Your name"
               />
             </label>
@@ -1045,7 +1303,9 @@ function App() {
               <input
                 required
                 value={signup.phone}
-                onChange={(event) => setSignup({ ...signup, phone: event.target.value })}
+                onChange={(event) =>
+                  setSignup({ ...signup, phone: event.target.value })
+                }
                 placeholder="WhatsApp number"
               />
             </label>
@@ -1055,7 +1315,9 @@ function App() {
                 required
                 type="email"
                 value={signup.email}
-                onChange={(event) => setSignup({ ...signup, email: event.target.value })}
+                onChange={(event) =>
+                  setSignup({ ...signup, email: event.target.value })
+                }
                 placeholder="you@example.com"
               />
             </label>
@@ -1066,12 +1328,20 @@ function App() {
                 minLength="6"
                 type="password"
                 value={signup.password}
-                onChange={(event) => setSignup({ ...signup, password: event.target.value })}
+                onChange={(event) =>
+                  setSignup({ ...signup, password: event.target.value })
+                }
                 placeholder="Create password"
               />
             </label>
-            <button type="submit" className="checkout-button">Create User Account</button>
-            <button type="button" className="google-button" onClick={closeSignup}>
+            <button type="submit" className="checkout-button">
+              Create User Account
+            </button>
+            <button
+              type="button"
+              className="google-button"
+              onClick={closeSignup}
+            >
               Continue with Google
             </button>
             <button
@@ -1080,7 +1350,7 @@ function App() {
               onClick={() => {
                 closeSignup();
                 setShowAccount(true);
-                setAccountMode('login');
+                setAccountMode("login");
               }}
             >
               Already have account
@@ -1094,21 +1364,37 @@ function App() {
       )}
 
       {showAccount && (
-        <div className="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="account-title">
+        <div
+          className="modal-backdrop"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="account-title"
+        >
           <div className="signup-modal">
-            <button type="button" className="modal-close" onClick={() => setShowAccount(false)} aria-label="Close account">
+            <button
+              type="button"
+              className="modal-close"
+              onClick={() => setShowAccount(false)}
+              aria-label="Close account"
+            >
               x
             </button>
             <div className="section-heading compact">
-              <p>{currentAccount ? currentAccount.role : 'Account'}</p>
-              <h2 id="account-title">{currentAccount ? currentAccount.name : 'Login or Signup'}</h2>
+              <p>{currentAccount ? currentAccount.role : "Account"}</p>
+              <h2 id="account-title">
+                {currentAccount ? currentAccount.name : "Login or Signup"}
+              </h2>
             </div>
 
             {currentAccount ? (
               <>
                 <p className="muted">{currentAccount.email}</p>
                 {isAdmin && (
-                  <button type="button" className="checkout-button" onClick={openAdmin}>
+                  <button
+                    type="button"
+                    className="checkout-button"
+                    onClick={openAdmin}
+                  >
                     Open Upload Panel
                   </button>
                 )}
@@ -1116,7 +1402,7 @@ function App() {
                   Logout
                 </button>
               </>
-            ) : accountMode === 'login' ? (
+            ) : accountMode === "login" ? (
               <form className="account-form" onSubmit={submitLogin}>
                 <label>
                   Email
@@ -1124,7 +1410,9 @@ function App() {
                     required
                     type="email"
                     value={login.email}
-                    onChange={(event) => setLogin({ ...login, email: event.target.value })}
+                    onChange={(event) =>
+                      setLogin({ ...login, email: event.target.value })
+                    }
                     placeholder="Email"
                   />
                 </label>
@@ -1135,15 +1423,27 @@ function App() {
                     minLength="6"
                     type="password"
                     value={login.password}
-                    onChange={(event) => setLogin({ ...login, password: event.target.value })}
+                    onChange={(event) =>
+                      setLogin({ ...login, password: event.target.value })
+                    }
                     placeholder="Password"
                   />
                 </label>
-                <button type="submit" className="checkout-button">Login</button>
-                <button type="button" className="google-button" onClick={() => setShowAccount(false)}>
+                <button type="submit" className="checkout-button">
+                  Login
+                </button>
+                <button
+                  type="button"
+                  className="google-button"
+                  onClick={() => setShowAccount(false)}
+                >
                   Continue with Google
                 </button>
-                <button type="button" className="skip-button" onClick={() => setAccountMode('signup')}>
+                <button
+                  type="button"
+                  className="skip-button"
+                  onClick={() => setAccountMode("signup")}
+                >
                   Create user account
                 </button>
               </form>
@@ -1154,7 +1454,9 @@ function App() {
                   <input
                     required
                     value={signup.name}
-                    onChange={(event) => setSignup({ ...signup, name: event.target.value })}
+                    onChange={(event) =>
+                      setSignup({ ...signup, name: event.target.value })
+                    }
                     placeholder="Your name"
                   />
                 </label>
@@ -1163,7 +1465,9 @@ function App() {
                   <input
                     required
                     value={signup.phone}
-                    onChange={(event) => setSignup({ ...signup, phone: event.target.value })}
+                    onChange={(event) =>
+                      setSignup({ ...signup, phone: event.target.value })
+                    }
                     placeholder="WhatsApp number"
                   />
                 </label>
@@ -1173,7 +1477,9 @@ function App() {
                     required
                     type="email"
                     value={signup.email}
-                    onChange={(event) => setSignup({ ...signup, email: event.target.value })}
+                    onChange={(event) =>
+                      setSignup({ ...signup, email: event.target.value })
+                    }
                     placeholder="you@example.com"
                   />
                 </label>
@@ -1184,12 +1490,20 @@ function App() {
                     minLength="6"
                     type="password"
                     value={signup.password}
-                    onChange={(event) => setSignup({ ...signup, password: event.target.value })}
+                    onChange={(event) =>
+                      setSignup({ ...signup, password: event.target.value })
+                    }
                     placeholder="Create password"
                   />
                 </label>
-                <button type="submit" className="checkout-button">Create User Account</button>
-                <button type="button" className="skip-button" onClick={() => setAccountMode('login')}>
+                <button type="submit" className="checkout-button">
+                  Create User Account
+                </button>
+                <button
+                  type="button"
+                  className="skip-button"
+                  onClick={() => setAccountMode("login")}
+                >
                   Back to login
                 </button>
               </form>
@@ -1203,4 +1517,4 @@ function App() {
   );
 }
 
-createRoot(document.getElementById('root')).render(<App />);
+createRoot(document.getElementById("root")).render(<App />);
