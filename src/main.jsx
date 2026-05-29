@@ -90,7 +90,7 @@ function productShareUrl(product) {
 
 function whatsappLink(product) {
   const message = [
-    `Hi Nilla Sarres, I want to buy ${product.name} (${money(product.price)}).`,
+    `Hi Nilavalayam, I want to buy ${product.name} (${money(product.price)}).`,
     `Saree image: ${productImageUrl(product)}`,
     "Please share more details.",
   ].join("\n");
@@ -107,7 +107,7 @@ function cartWhatsappLink(cart, customer, total) {
   ]);
 
   const message = [
-    "Hi Nilla Sarres, I want to buy these sarees:",
+    "Hi Nilavalayam, I want to buy these sarees:",
     "",
     ...itemLines,
     "",
@@ -521,8 +521,8 @@ function App() {
 
   async function shareProduct(product) {
     const shareData = {
-      title: `${product.name} - Nilla Sarres`,
-      text: `Check this saree from Nilla Sarres: ${product.name} (${money(product.price)})`,
+      title: `${product.name} - Nilavalayam`,
+      text: `Check this saree from Nilavalayam: ${product.name} (${money(product.price)})`,
       url: productShareUrl(product),
     };
 
@@ -588,11 +588,11 @@ function App() {
         <a
           className="brand"
           href="#top"
-          aria-label="Nilla Sarres home"
+          aria-label="Nilavalayam home"
           onClick={openShop}
         >
-          <img className="brand-logo" src="/websiteLogo.jpeg" alt="" />
-          <span>Nilla Sarres</span>
+          <img className="brand-logo" src="/websiteLogo.png" alt="" />
+          <span>Nilavalayam</span>
         </a>
         <nav>
           <a href="#collection" onClick={openShop}>
@@ -1098,7 +1098,7 @@ function App() {
             />
             <div className="hero-copy">
               <p>Fresh festive drapes</p>
-              <h1>Nilla Sarres</h1>
+              <h1>Nilavalayam</h1>
               <span>
                 Silk, cotton, bridal, and party wear sarees selected for
                 graceful everyday shopping.
@@ -1285,7 +1285,7 @@ function App() {
             </button>
             <div className="section-heading compact">
               {/* <p>User role</p> */}
-              <h2 id="signup-title">Welcome to Nilla Sarres</h2>
+              <h2 id="signup-title">Welcome to Nilavalayam</h2>
             </div>
             <label>
               Name
