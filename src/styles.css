@@ -245,14 +245,145 @@ textarea {
 
 .product-card {
   background: white;
-  border: 1px solid rgba(82, 57, 47, 0.12);
-  border-radius: 8px;
-  box-shadow: 0 16px 38px rgba(78, 46, 36, 0.08);
+  border-radius: 4px;
   cursor: pointer;
-  display: grid;
-  grid-template-rows: 250px 1fr;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
   transition: transform 160ms ease, box-shadow 160ms ease;
+  position: relative;
+}
+
+.myntra-card:hover {
+  box-shadow: 0 4px 12px 0 rgba(0,0,0,0.15);
+}
+
+.product-image-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+}
+
+.product-image-container .product-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 4px;
+  z-index: 2;
+}
+
+.carousel-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  transition: background-color 0.2s;
+}
+
+.carousel-dots .dot.active {
+  background-color: white;
+}
+
+.wishlist-overlay {
+  position: absolute;
+  bottom: -40px;
+  left: 0;
+  width: 100%;
+  background: rgba(255,255,255,0.95);
+  padding: 8px;
+  transition: bottom 0.2s ease, opacity 0.2s ease;
+  opacity: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+}
+
+.wishlist-overlay.visible {
+  bottom: 0;
+  opacity: 1;
+}
+
+.myntra-wishlist-btn {
+  width: 100%;
+  background: transparent;
+  border: 1px solid #d4d5d9;
+  border-radius: 2px;
+  padding: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 14px;
+  color: #282c3f;
+  transition: border-color 0.2s;
+}
+
+.myntra-wishlist-btn:hover {
+  border-color: #282c3f;
+}
+
+.wishlist-icon {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: #282c3f;
+  stroke-width: 2;
+  transition: fill 0.2s, stroke 0.2s;
+}
+
+.wishlist-icon.filled {
+  fill: #ff3f6c;
+  stroke: #ff3f6c;
+}
+
+.product-info-container {
+  padding: 12px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.brand-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: #282c3f;
+  margin: 0;
+  text-transform: uppercase;
+}
+
+.product-title {
+  font-size: 14px;
+  color: #535766;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin: 0;
+}
+
+.price-row {
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.current-price {
+  font-size: 14px;
+  font-weight: 700;
+  color: #282c3f;
 }
 
 .product-card:hover,
@@ -268,7 +399,7 @@ textarea {
   width: 100%;
 }
 
-.product-card > div {
+.product-card > div.legacy-container {
   display: grid;
   gap: 12px;
   padding: 16px;
@@ -1040,4 +1171,42 @@ input[type="file"] {
   .admin-form {
     padding: 16px;
   }
+}
+
+/* Favorite Button */
+.favorite-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  z-index: 10;
+  padding: 0;
+  transition: transform 150ms ease, background 150ms ease;
+}
+
+.favorite-btn:hover {
+  transform: scale(1.08);
+  background: white;
+}
+
+.favorite-btn svg {
+  fill: none;
+  stroke: #8c3f53;
+  stroke-width: 2;
+  width: 20px;
+  height: 20px;
+  transition: fill 150ms ease;
+}
+
+.favorite-btn.active svg {
+  fill: #8c3f53;
 }
