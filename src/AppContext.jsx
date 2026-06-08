@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, useMemo } from 'react';
-import { fetchProducts, fetchFavorites, addFavorite, removeFavorite } from './api';
+import { fetchProducts, fetchFavorites, addFavorite, removeFavorite, logoutApi } from './api';
 import toast from 'react-hot-toast';
 
 const AppContext = createContext();
@@ -81,14 +81,31 @@ export function AppProvider({ children }) {
     }
   }
 
-  function logout() {
-    setCurrentAccount(null);
-    setFavorites([]);
-    localStorage.removeItem("nillaAccount");
-    setView("shop");
-    setShowAccount(false);
-    setShowSignup(true);
-    toast.success("Logged out.");
+  async function logout() {
+    await toast.promise(
+      logoutApi().then(() => {
+        setCurrentAccount(null);
+        setFavorites([]);
+        localStorage.removeItem("nillaAccount");
+        setView("shop");
+        setShowAccount(false);
+        setShowSignup(true);
+      }).catch((err) => {
+        // Even if API fails, log out locally
+        setCurrentAccount(null);
+        setFavorites([]);
+        localStorage.removeItem("nillaAccount");
+        setView("shop");
+        setShowAccount(false);
+        setShowSignup(true);
+        throw err;
+      }),
+      {
+        loading: 'Logging out...',
+        success: 'Logged out.',
+        error: 'Failed to log out cleanly, but local session cleared.',
+      }
+    );
   }
 
   const value = {
