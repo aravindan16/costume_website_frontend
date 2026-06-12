@@ -32,6 +32,9 @@ export default function Header() {
       <nav>
         {!isAdmin && (
           <>
+            <a href="#about" onClick={() => setView("about")}>About Us</a>
+            <a href="#why-choose-us" onClick={() => setView("why-choose-us")}>Why Choose Us</a>
+            <a href="#contact" onClick={() => setView("contact")}>Contact Us</a>
             <a href="#collection" onClick={openShop}>Collection</a>
             <a href="#favorites" onClick={openShop}>Favorites ({favorites.length})</a>
             <a href="#cart" onClick={openShop}>
@@ -41,6 +44,9 @@ export default function Header() {
         )}
         {isAdmin && (
           <>
+            <a href="#about" onClick={() => setView("about")}>About Us</a>
+            <a href="#why-choose-us" onClick={() => setView("why-choose-us")}>Why Choose Us</a>
+            <a href="#contact" onClick={() => setView("contact")}>Contact Us</a>
             <a href="#collection" onClick={openShop}>View Store</a>
             <a href="#admin" onClick={() => setView("admin")}>Upload Panel</a>
             <button type="button" style={{ background: "transparent", border: "none", color: "inherit", cursor: "pointer", fontSize: "14px", fontWeight: "600" }} onClick={logout}>Logout</button>

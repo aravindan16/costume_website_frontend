@@ -8,17 +8,24 @@ import FavoritesList from './components/FavoritesList';
 import Cart from './components/Cart';
 import AuthModal from './components/AuthModal';
 import AdminPanel from './components/AdminPanel';
+import AboutUs from './components/AboutUs';
+import ContactUs from './components/ContactUs';
+import Footer from './components/Footer';
 import { Toaster } from 'react-hot-toast';
 
 export default function App() {
   const { view, selectedProduct } = useAppContext();
 
   return (
-    <main>
+    <main className="main-layout" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Toaster position="top-center" />
       <Header />
       {view === "admin" ? (
         <AdminPanel />
+      ) : ["about", "why-choose-us", "purpose", "mission"].includes(view) ? (
+        <AboutUs />
+      ) : view === "contact" ? (
+        <ContactUs />
       ) : selectedProduct ? (
         <ProductDetail />
       ) : (
@@ -36,6 +43,7 @@ export default function App() {
       )}
 
       <AuthModal />
+      <Footer />
     </main>
   );
 }
