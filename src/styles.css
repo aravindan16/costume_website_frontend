@@ -1129,6 +1129,10 @@ input[type="file"] {
 }
 
 @media (max-width: 640px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+
   .nav {
     flex-direction: row;
     flex-wrap: wrap;
