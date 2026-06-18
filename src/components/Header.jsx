@@ -65,38 +65,14 @@ export default function Header() {
           </>
         )}
         
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', position: 'relative' }}>
-          <button 
-            type="button" 
-            onClick={toggleSearch} 
-            style={{ background: 'transparent', border: 'none', color: '#5e4942', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }} 
-            aria-label="Search"
-          >
-            <BsSearch size={20} />
-          </button>
-          <form 
-            onSubmit={handleSearchSubmit}
-            style={{ 
-              display: 'flex', 
-              width: isSearchOpen ? '200px' : '0px', 
-              opacity: isSearchOpen ? 1 : 0, 
-              overflow: 'hidden', 
-              transition: 'all 0.3s ease',
-              position: 'absolute',
-              right: '100%',
-              marginRight: '12px'
-            }}
-          >
-            <input 
-              ref={searchInputRef}
-              type="text" 
-              placeholder="Search..." 
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              style={{ padding: '6px 12px', borderRadius: '20px', border: '1px solid #ddd', width: '100%', height: '32px', minHeight: '32px', fontSize: '14px' }}
-            />
-          </form>
-        </div>
+        <button 
+          type="button" 
+          onClick={toggleSearch} 
+          style={{ background: 'transparent', border: 'none', color: '#5e4942', cursor: 'pointer', padding: 0, display: 'flex', alignItems: 'center' }} 
+          aria-label="Search"
+        >
+          <BsSearch size={20} />
+        </button>
 
         <a href="https://wa.me/?text=Hi" target="_blank" rel="noopener noreferrer" style={{ color: '#5e4942', display: 'flex', alignItems: 'center' }} aria-label="WhatsApp">
            <BsWhatsapp size={22} />
@@ -128,6 +104,44 @@ export default function Header() {
            </span>
         </a>
       </nav>
+
+      {/* Full-width Search Dropdown */}
+      {isSearchOpen && (
+        <div 
+          style={{ 
+            position: 'absolute', 
+            top: '100%', 
+            left: 0, 
+            width: '100%', 
+            backgroundColor: '#f8f8f8', 
+            padding: '24px 40px', 
+            boxShadow: '0 4px 6px rgba(0,0,0,0.05)', 
+            borderBottom: '1px solid #ddd', 
+            zIndex: 99,
+            boxSizing: 'border-box'
+          }}
+        >
+          <form 
+            onSubmit={handleSearchSubmit}
+            style={{ display: 'flex', maxWidth: '800px', margin: '0 auto', height: '48px', border: '1px solid #ddd', borderRadius: '4px', overflow: 'hidden' }}
+          >
+            <div style={{ padding: '0 15px', display: 'flex', alignItems: 'center', backgroundColor: '#fff' }}>
+              <BsSearch size={20} color="#666" />
+            </div>
+            <input 
+              ref={searchInputRef}
+              type="text" 
+              placeholder="Search..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              style={{ flex: 1, padding: '0 15px', border: 'none', outline: 'none', fontSize: '16px', minHeight: '48px', borderRadius: 0, color: '#333' }}
+            />
+            <button type="submit" style={{ backgroundColor: '#e53935', color: 'white', border: 'none', padding: '0 30px', fontSize: '16px', fontWeight: 'bold', cursor: 'pointer' }}>
+              Search
+            </button>
+          </form>
+        </div>
+      )}
     </header>
   );
 }
