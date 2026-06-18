@@ -37,7 +37,7 @@ export default function Footer() {
           <div>
             <h3 style={{ fontSize: '1rem', fontWeight: 'bold', marginBottom: '1rem', letterSpacing: '1px' }}>SUPPORT</h3>
             <div style={{ fontSize: '0.9rem', opacity: 0.8, lineHeight: '1.6' }}>
-              <p style={{ margin: '0 0 5px 0' }}>Call : +91 8220201096</p>
+              <p style={{ margin: '0 0 5px 0' }}>Call : +91 1234567890</p>
               <p style={{ margin: '0 0 5px 0' }}>Email : support@nilavalayam.in</p>
               <p style={{ marginTop: '0.5rem', marginBottom: '0' }}><a href="#track" style={{ color: '#fff', textDecoration: 'underline' }}>INITIATE OR TRACK YOUR RETURN</a></p>
             </div>

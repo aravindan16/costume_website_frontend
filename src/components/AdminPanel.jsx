@@ -8,6 +8,11 @@ const emptyAdminProduct = {
   name: "", category: "", price: "", color: "", stock: "", description: "", images: [],
 };
 
+const CATEGORIES = [
+  { label: "Fabrics", options: ["Silk Sarees", "Cotton Sarees", "Tussar", "Georgette Sarees", "Banarasi Sarees", "Jute Sarees", "Art Silk"] },
+  { label: "Occasions", options: ["Weddings & Events", "Evenings & Celebrations", "Festive", "Work & Everyday Elegance", "Gifting"] }
+];
+
 export default function AdminPanel() {
   const { isAdmin, products, setProducts, currentAccount } = useAppContext();
   const [adminTab, setAdminTab] = useState("upload");
@@ -15,6 +20,7 @@ export default function AdminPanel() {
   const [editingProduct, setEditingProduct] = useState(null);
   const [existingImages, setExistingImages] = useState([]);
   const [imagePreviews, setImagePreviews] = useState([]);
+  const [manageCategoryFilter, setManageCategoryFilter] = useState("All");
 
   useEffect(() => {
     if (adminProduct.images?.length > 0) {
@@ -103,6 +109,10 @@ export default function AdminPanel() {
     );
   }
 
+  const filteredManageProducts = manageCategoryFilter === "All" 
+    ? products 
+    : products.filter(p => p.category === manageCategoryFilter);
+
   return (
     <section className="admin-page" id="admin">
       <div className="section-heading">
@@ -129,7 +139,16 @@ export default function AdminPanel() {
               </div>
             )}
             <label>Name<input required value={adminProduct.name} onChange={(e) => setAdminProduct({ ...adminProduct, name: e.target.value })} /></label>
-            <label>Category<input required value={adminProduct.category} onChange={(e) => setAdminProduct({ ...adminProduct, category: e.target.value })} /></label>
+            <label>Category
+              <select required value={adminProduct.category} onChange={(e) => setAdminProduct({ ...adminProduct, category: e.target.value })}>
+                <option value="" disabled>Select a category...</option>
+                {CATEGORIES.map(group => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  </optgroup>
+                ))}
+              </select>
+            </label>
             <label>Price<input required type="number" value={adminProduct.price} onChange={(e) => setAdminProduct({ ...adminProduct, price: e.target.value })} /></label>
             <label>Color<input required value={adminProduct.color} onChange={(e) => setAdminProduct({ ...adminProduct, color: e.target.value })} /></label>
             <label>Stock<input required type="number" value={adminProduct.stock} onChange={(e) => setAdminProduct({ ...adminProduct, stock: e.target.value })} /></label>
@@ -172,23 +191,41 @@ export default function AdminPanel() {
           </form>
         ) : (
           <div className="manage-panel">
-            {products.map((product) => (
-              <article className="manage-row" key={product.id}>
-                <img src={productImageUrl(product)} alt={product.name} />
-                <div className="manage-row-details">
-                  <strong>{product.name}</strong>
-                  <span className="manage-row-meta">
-                    <span className="badge-cat">{product.category}</span>
-                    <span className="price-tag">{money(product.price)}</span>
-                    <span className={`stock-status ${product.stock === 0 ? "out-of-stock" : ""}`}>{product.stock} left</span>
-                  </span>
-                </div>
-                <div className="manage-row-actions">
-                  <button type="button" className="share-button edit-action-btn" onClick={() => startEditProduct(product)}>Edit</button>
-                  <button type="button" className="delete-action-btn" onClick={() => deleteProduct(product)}>Delete</button>
-                </div>
-              </article>
-            ))}
+            <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '16px' }}>
+              <select 
+                value={manageCategoryFilter} 
+                onChange={(e) => setManageCategoryFilter(e.target.value)}
+                style={{ padding: '8px 12px', borderRadius: '8px', border: '1px solid #ddd', fontSize: '14px', outline: 'none' }}
+              >
+                <option value="All">All Categories</option>
+                {CATEGORIES.map(group => (
+                  <optgroup key={group.label} label={group.label}>
+                    {group.options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+            {filteredManageProducts.length === 0 ? (
+              <p className="muted" style={{ textAlign: 'center', padding: '40px 0' }}>No products found in this category.</p>
+            ) : (
+              filteredManageProducts.map((product) => (
+                <article className="manage-row" key={product.id}>
+                  <img src={productImageUrl(product)} alt={product.name} />
+                  <div className="manage-row-details">
+                    <strong>{product.name}</strong>
+                    <span className="manage-row-meta">
+                      <span className="badge-cat">{product.category}</span>
+                      <span className="price-tag">{money(product.price)}</span>
+                      <span className={`stock-status ${product.stock === 0 ? "out-of-stock" : ""}`}>{product.stock} left</span>
+                    </span>
+                  </div>
+                  <div className="manage-row-actions">
+                    <button type="button" className="share-button edit-action-btn" onClick={() => startEditProduct(product)}>Edit</button>
+                    <button type="button" className="delete-action-btn" onClick={() => deleteProduct(product)}>Delete</button>
+                  </div>
+                </article>
+              ))
+            )}
           </div>
         )}
       </div>

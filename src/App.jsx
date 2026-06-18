@@ -2,7 +2,9 @@ import React from 'react';
 import { useAppContext } from './AppContext';
 import Header from './components/Header';
 import Hero from './components/Hero';
-import ProductList from './components/ProductList';
+import ShopByFabric from './components/ShopByFabric';
+import ShopByOccasion from './components/ShopByOccasion';
+import CategoryView from './components/CategoryView';
 import ProductDetail from './components/ProductDetail';
 import FavoritesList from './components/FavoritesList';
 import Cart from './components/Cart';
@@ -28,19 +30,21 @@ export default function App() {
         <ContactUs />
       ) : selectedProduct ? (
         <ProductDetail />
+      ) : view === "favorites" ? (
+        <div style={{ padding: '40px clamp(18px, 4vw, 54px)', flex: 1, background: '#fbf7f1' }}>
+          <FavoritesList />
+        </div>
+      ) : view === "category" ? (
+        <CategoryView />
       ) : (
         <>
           <Hero />
-          <ProductList />
+          <ShopByFabric />
+          <ShopByOccasion />
         </>
       )}
 
-      {view === "shop" && !selectedProduct && (
-        <>
-          <FavoritesList />
-          <Cart />
-        </>
-      )}
+      <Cart />
 
       <AuthModal />
       <Footer />

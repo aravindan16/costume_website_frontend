@@ -27,7 +27,7 @@ export default function ContactUs() {
 
       <div style={{ display: 'flex', flexWrap: 'wrap', border: '1px solid #eee', borderRadius: '8px', padding: '1.5rem 0' }}>
         <div style={{ flex: '1 1 250px', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center', borderRight: '1px solid #eee', padding: '1rem' }}>
-          <span style={{ fontSize: '1.4rem' }}>📞</span> <strong style={{ fontSize: '0.95rem' }}>+91 8220201096</strong>
+          <span style={{ fontSize: '1.4rem' }}>📞</span> <strong style={{ fontSize: '0.95rem' }}>+91 1234567890</strong>
         </div>
         <div style={{ flex: '1 1 250px', display: 'flex', alignItems: 'center', gap: '12px', justifyContent: 'center', borderRight: '1px solid #eee', padding: '1rem' }}>
           <span style={{ fontSize: '1.4rem' }}>✉️</span> <strong style={{ fontSize: '0.95rem' }}>support@nilavalayam.in</strong>

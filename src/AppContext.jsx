@@ -17,11 +17,16 @@ export function AppProvider({ children }) {
   
   const [view, setView] = useState("shop");
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [categoryFilter, setCategoryFilter] = useState("All");
+  const [searchQuery, setSearchQuery] = useState("");
   
   // Auth Modal State
   const [showSignup, setShowSignup] = useState(() => !localStorage.getItem("nillaAccount"));
   const [showAccount, setShowAccount] = useState(false);
   const [accountMode, setAccountMode] = useState("login");
+  
+  // Cart Overlay State
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
   const isAdmin = currentAccount?.role === "admin";
 
@@ -118,6 +123,9 @@ export function AppProvider({ children }) {
     showSignup, setShowSignup,
     showAccount, setShowAccount,
     accountMode, setAccountMode,
+    categoryFilter, setCategoryFilter,
+    searchQuery, setSearchQuery,
+    isCartOpen, setIsCartOpen,
   };
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;

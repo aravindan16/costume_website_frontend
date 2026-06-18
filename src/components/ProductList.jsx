@@ -1,11 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo } from 'react';
 import { useAppContext } from '../AppContext';
 import ProductCard from './ProductCard';
 
 export default function ProductList() {
-  const { products } = useAppContext();
-  const [query, setQuery] = useState("");
-  const [category, setCategory] = useState("All");
+  const { products, categoryFilter, setCategoryFilter, searchQuery, setSearchQuery } = useAppContext();
 
   const categories = useMemo(
     () => ["All", ...Array.from(new Set(products.map((item) => item.category)))],
@@ -14,11 +12,11 @@ export default function ProductList() {
 
   const filteredProducts = useMemo(() => {
     return products.filter((item) => {
-      const matchesCategory = category === "All" || item.category === category;
+      const matchesCategory = categoryFilter === "All" || item.category === categoryFilter;
       const searchText = `${item.name} ${item.category} ${item.color}`.toLowerCase();
-      return matchesCategory && searchText.includes(query.toLowerCase());
+      return matchesCategory && searchText.includes(searchQuery.toLowerCase());
     });
-  }, [products, category, query]);
+  }, [products, categoryFilter, searchQuery]);
 
   return (
     <section className="shop-band" id="collection">
@@ -30,11 +28,11 @@ export default function ProductList() {
       <div className="tools">
         <label>
           Search
-          <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Silk, bridal, cotton..." />
+          <input value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Silk, bridal, cotton..." />
         </label>
         <label>
           Category
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select value={categoryFilter} onChange={(e) => setCategoryFilter(e.target.value)}>
             {categories.map((item) => (
               <option key={item}>{item}</option>
             ))}

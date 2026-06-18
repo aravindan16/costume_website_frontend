@@ -1214,3 +1214,114 @@ input[type="file"] {
 .favorite-btn.active svg {
   fill: #8c3f53;
 }
+
+/* Categories */
+.category-section {
+  padding: 54px clamp(18px, 4vw, 54px);
+  background: white;
+}
+.category-section.occasion-section {
+  background: #fbf7f1;
+}
+
+.center-align {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.fabric-container {
+  display: flex;
+  justify-content: center;
+  gap: 3vw;
+  margin-top: 40px;
+  flex-wrap: wrap;
+}
+.fabric-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+.fabric-item:hover {
+  transform: translateY(-4px);
+}
+.fabric-circle {
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.fabric-circle img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+.fabric-item:hover .fabric-circle img {
+  transform: scale(1.05);
+}
+.fabric-name {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #261d1b;
+}
+
+.occasion-container {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-top: 40px;
+}
+.occasion-card {
+  position: relative;
+  aspect-ratio: 4/5;
+  overflow: hidden;
+  cursor: pointer;
+}
+.occasion-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.occasion-card:hover img {
+  transform: scale(1.04);
+}
+.occasion-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0) 40%);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  padding: 24px;
+}
+.occasion-title {
+  color: white;
+  font-size: 1.2rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 16px;
+  text-align: center;
+}
+.shop-now-btn {
+  background: white;
+  color: #261d1b;
+  border: none;
+  padding: 10px 24px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  text-transform: uppercase;
+  transition: background 0.2s, color 0.2s;
+}
+.occasion-card:hover .shop-now-btn {
+  background: #4b2d38;
+  color: white;
+}
